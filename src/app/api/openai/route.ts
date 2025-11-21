@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
       if (!hasSystemMessage) {
         messages.unshift({
           role: 'system',
-          content: 'Ты - полезный AI-ассистент. Пользователь может отправлять файлы (текстовые, аудио, видео). Ты получаешь содержимое этих файлов в сообщениях пользователя. Всегда анализируй и работай с содержимым файлов, отвечай на вопросы о них, обрабатывай данные из них. Для аудио и видео файлов ты получаешь транскрибированный текст. Для текстовых файлов ты получаешь их полное содержимое.'
+          content: 'Ты - полезный AI-ассистент. Пользователь может отправлять файлы (текстовые, аудио, видео). Ты получаешь содержимое этих файлов в сообщениях пользователя. Всегда анализируй и работай с содержимым файлов, отвечай на вопросы о них, обрабатывай данные из них. Для аудио и видео файлов ты получаешь транскрибированный текст - прочитай его и предоставь информацию из него. Для текстовых файлов ты получаешь их полное содержимое - прочитай и проанализируй его. Если пользователь отправил только файл без текстового сообщения, обработай содержимое файла и предоставь полезную информацию о нем.'
         });
       }
     }
@@ -99,21 +99,23 @@ export async function POST(request: NextRequest) {
           const isAudio = file.type.startsWith('audio/');
           const isVideo = file.type.startsWith('video/');
           const isText = file.type.startsWith('text/') || 
-                        file.name.endsWith('.txt') || 
-                        file.name.endsWith('.md') || 
-                        file.name.endsWith('.json') ||
-                        file.name.endsWith('.csv') ||
-                        file.name.endsWith('.log') ||
-                        file.name.endsWith('.xml') ||
-                        file.name.endsWith('.html') ||
-                        file.name.endsWith('.css') ||
-                        file.name.endsWith('.js') ||
-                        file.name.endsWith('.ts') ||
-                        file.name.endsWith('.py') ||
-                        file.name.endsWith('.java') ||
-                        file.name.endsWith('.cpp') ||
-                        file.name.endsWith('.c') ||
-                        file.name.endsWith('.h');
+                        file.type === 'application/pdf' ||
+                        file.name.toLowerCase().endsWith('.txt') || 
+                        file.name.toLowerCase().endsWith('.md') || 
+                        file.name.toLowerCase().endsWith('.json') ||
+                        file.name.toLowerCase().endsWith('.csv') ||
+                        file.name.toLowerCase().endsWith('.log') ||
+                        file.name.toLowerCase().endsWith('.xml') ||
+                        file.name.toLowerCase().endsWith('.html') ||
+                        file.name.toLowerCase().endsWith('.css') ||
+                        file.name.toLowerCase().endsWith('.js') ||
+                        file.name.toLowerCase().endsWith('.ts') ||
+                        file.name.toLowerCase().endsWith('.py') ||
+                        file.name.toLowerCase().endsWith('.java') ||
+                        file.name.toLowerCase().endsWith('.cpp') ||
+                        file.name.toLowerCase().endsWith('.c') ||
+                        file.name.toLowerCase().endsWith('.h') ||
+                        file.name.toLowerCase().endsWith('.pdf');
           
           console.log('[OPENAI API] Проверка файла:', file.name, 'тип:', file.type, 'isAudio:', isAudio, 'isVideo:', isVideo, 'isText:', isText);
           
@@ -132,10 +134,17 @@ export async function POST(request: NextRequest) {
           } else if (isText) {
             try {
               console.log('[OPENAI API] Чтение текстового файла:', file.name);
-              const text = await file.text();
-              if (text.trim()) {
-                fileContents.push(`[Содержимое файла ${file.name}]:\n${text}`);
-                console.log('[OPENAI API] Текстовый файл прочитан, длина:', text.length);
+              // Для PDF пытаемся прочитать как текст (базовая поддержка)
+              if (file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf') {
+                // PDF требует специальной обработки, но для базовой поддержки попробуем
+                fileContents.push(`[PDF файл ${file.name} загружен. Для полной обработки PDF требуется специальная библиотека.]`);
+                console.log('[OPENAI API] PDF файл обнаружен, требуется специальная обработка');
+              } else {
+                const text = await file.text();
+                if (text.trim()) {
+                  fileContents.push(`[Содержимое файла ${file.name}]:\n${text}`);
+                  console.log('[OPENAI API] Текстовый файл прочитан, длина:', text.length);
+                }
               }
             } catch (error) {
               console.error('[OPENAI API] Ошибка чтения текстового файла', file.name, ':', error);

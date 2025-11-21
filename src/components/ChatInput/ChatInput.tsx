@@ -147,7 +147,7 @@ const ChatInput: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!prompt.trim() && selectedFiles.length === 0) return;
+    if (!prompt.trim()) return; // Блокируем отправку без промпта, даже если есть файлы
     if (isLoading || isSubmitting) {
       console.log('[ChatInput] Блокировка отправки: isLoading=', isLoading, 'isSubmitting=', isSubmitting);
       return; // Блокируем повторную отправку
@@ -194,7 +194,7 @@ const ChatInput: React.FC = () => {
 
 
   return (
-    <div className={`bg-zinc-700 border-2 border-green-500 w-4/5 rounded-3xl p-2 ${history.length > 0 ? 'fixed bottom-10 left-1/2 transform -translate-x-1/2 z-40' : ''}`}>
+    <div className={`bg-zinc-700 border-2 border-green-500 w-4/5 rounded-3xl p-2 ${history.length > 0 ? 'fixed bottom-10 left-1/2 transform -translate-x-1/2 z-40' : 'absolute bottom-10 left-1/2 transform -translate-x-1/2'}`}>
       <form action="" onSubmit={handleSubmit}>
         {selectedFiles.length > 0 && 
         <ul className='flex gap-2 h-10 py-2 px-3 overflow-x-auto whitespace-nowrap'>
@@ -278,9 +278,9 @@ const ChatInput: React.FC = () => {
             </button>
             <button 
               type='submit'
-              disabled={isLoading || isTranscribing || isSubmitting}
+              disabled={isLoading || isTranscribing || isSubmitting || !prompt.trim()}
               className={`rounded-full border-2 ease-in duration-200 p-3 ${
-                isLoading || isTranscribing || isSubmitting
+                isLoading || isTranscribing || isSubmitting || !prompt.trim()
                   ? 'bg-zinc-600 text-zinc-400 border-zinc-600 cursor-not-allowed'
                   : 'bg-green-500 text-zinc-700 hover:bg-zinc-700 border-green-500 hover:text-green-500'
               }`}

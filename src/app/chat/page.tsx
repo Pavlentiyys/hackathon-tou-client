@@ -43,7 +43,7 @@ const Chat: React.FC = () => {
               </div>
             )}
             
-            <div className='flex flex-col justify-center items-center gap-10 pt-8 pb-20'>
+            <div className={`flex flex-col items-center ${history.length === 0 ? 'justify-center min-h-[calc(100vh-200px)] gap-4' : 'gap-10 pt-8 pb-20'}`}>
                 <ChatMessages />
                 <ChatInput/>
             </div>
