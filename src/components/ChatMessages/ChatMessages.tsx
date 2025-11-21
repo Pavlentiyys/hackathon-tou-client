@@ -42,7 +42,7 @@ const ChatMessages: React.FC = () => {
   };
 
   return (
-    <div className='w-5/6 mb-32'>
+    <div className='w-5/6 mb-32G'>
       {history.length > 0 ? (
         <div className={`flex flex-col gap-6 w-auto h-auto overflow-y-auto px-4 py-2 `}>
           {history.map((message, index) => {
