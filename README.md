@@ -25,7 +25,7 @@
 ## 📋 Требования
 
 - Node.js 18+ 
-- npm, yarn или pnpm
+- Yarn
 - OpenAI API ключ
 
 ## 🔧 Установка
@@ -39,19 +39,8 @@ cd hackathon-client
 
 ### 2. Установка зависимостей
 
-Используя yarn (рекомендуется):
 ```bash
 yarn install
-```
-
-Или используя npm:
-```bash
-npm install
-```
-
-Или используя pnpm:
-```bash
-pnpm install
 ```
 
 ### 3. Настройка переменных окружения
@@ -77,10 +66,6 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 ```bash
 yarn dev
-# или
-npm run dev
-# или
-pnpm dev
 ```
 
 Откройте [http://localhost:3000](http://localhost:3000) в браузере.
@@ -158,16 +143,12 @@ hackathon-client/
 
 ```bash
 yarn build
-# или
-npm run build
 ```
 
 Запуск production сервера:
 
 ```bash
 yarn start
-# или
-npm start
 ```
 
 ## 📝 API Routes
