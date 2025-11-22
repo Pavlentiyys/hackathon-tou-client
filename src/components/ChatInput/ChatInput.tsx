@@ -35,7 +35,25 @@ const ChatInput: React.FC = () => {
 
   const handleFileSelected = (newFiles: File[]) => {
     if (newFiles.length > 0) {
-      setSelectedFiles(prevFiles => [...prevFiles, ...newFiles]);
+      const MAX_FILE_SIZE = 4.5 * 1024 * 1024; // 4.5MB
+      const validFiles: File[] = [];
+      const invalidFiles: string[] = [];
+      
+      newFiles.forEach(file => {
+        if (file.size > MAX_FILE_SIZE) {
+          invalidFiles.push(`${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+        } else {
+          validFiles.push(file);
+        }
+      });
+      
+      if (invalidFiles.length > 0) {
+        alert(`Файл(ы) слишком большие (максимум 4.5MB):\n${invalidFiles.join('\n')}`);
+      }
+      
+      if (validFiles.length > 0) {
+        setSelectedFiles(prevFiles => [...prevFiles, ...validFiles]);
+      }
     } 
     setOpenSelectFile(false);
   }
@@ -49,6 +67,14 @@ const ChatInput: React.FC = () => {
       return fileName;
     }
     return fileName.substring(0, maxLength) + '...';
+  }
+
+  // Упрощенная функция для сжатия - просто возвращаем файл как есть
+  // Сжатие на клиенте слишком сложное и медленное, лучше обрабатывать на сервере
+  const compressMediaFile = async (file: File): Promise<File> => {
+    // Пропускаем сжатие - отправляем файлы как есть
+    // Сервер обработает их напрямую
+    return file;
   }
 
   const startRecording = async () => {
@@ -158,20 +184,15 @@ const ChatInput: React.FC = () => {
     setIsSubmitting(true);
     setIsTranscribing(true);
 
-    const filesToStore: FileInfo[] = selectedFiles.map(file => ({
-      name: file.name,
-      size: file.size
-    }));
-
-    // Сохраняем данные перед очисткой
+    // Сохраняем данные перед отправкой
     const messagePrompt = prompt.trim();
     const messageFiles = [...selectedFiles];
     const messageIsSounded = isSounded;
 
-    // Сразу очищаем поля
-    setPrompt('');
-    setSelectedFiles([]);
-    setIsSounded(false);
+    const filesToStore: FileInfo[] = messageFiles.map(file => ({
+      name: file.name,
+      size: file.size
+    }));
 
     try {
       // Отправляем сообщение с файлами - транскрибация произойдет на сервере
@@ -184,8 +205,14 @@ const ChatInput: React.FC = () => {
       }, messageFiles);
 
       console.log('[ChatInput] Сообщение отправлено');
+      
+      // Очищаем поля только после успешной отправки
+      setPrompt('');
+      setSelectedFiles([]);
+      setIsSounded(false);
     } catch (error) {
       console.error('[ChatInput] Ошибка при отправке:', error);
+      // При ошибке не очищаем поля, чтобы пользователь мог попробовать снова
     } finally {
       setIsTranscribing(false);
       setIsSubmitting(false);
@@ -194,7 +221,7 @@ const ChatInput: React.FC = () => {
 
 
   return (
-    <div className={`bg-zinc-700 border-2 border-green-500 w-4/5 rounded-3xl p-2 ${history.length > 0 ? 'fixed bottom-10 left-1/2 transform -translate-x-1/2 z-40' : 'absolute bottom-10 left-1/2 transform -translate-x-1/2'}`}>
+    <div className={`bg-zinc-700 backdrop-blur-md border-2 border-green-500 w-[95%] md:w-3/4 rounded-3xl p-2 ${history.length > 0 ? 'fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40' : 'absolute bottom-10 left-1/2 transform -translate-x-1/2'}`}>
       <form action="" onSubmit={handleSubmit}>
         {selectedFiles.length > 0 && 
         <ul className='flex gap-2 h-10 py-2 px-3 overflow-x-auto whitespace-nowrap'>
@@ -231,7 +258,7 @@ const ChatInput: React.FC = () => {
             </span>
           </div>
         )}
-        <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="Введите промпт, добавьте файл и нажмите кнопку отправки!" className='resize-none text-md h-12 overflow-hidden w-full bg-zinc-700 ring-0 focus:ring-0 focus:outline-none px-4 py-3'/>
+        <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="Введите промпт, добавьте файл и нажмите кнопку отправки!" className='resize-none text-md h-18 md:h-12 overflow-hidden w-full bg-zinc-700 ring-0 focus:ring-0 focus:outline-none px-4 py-3'/>
         <div className='flex justify-between items-center mt-3 mb-2 mx-2'>
           <div className='flex gap-2 relative items-center'>
 

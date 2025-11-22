@@ -267,47 +267,47 @@ const AudioMessage: React.FC<AudioMessageProps> = ({ text, messageId }) => {
   }, [isPlaying, duration]);
 
   return (
-    <div className='bg-zinc-800 rounded-2xl p-4 border border-green-500/30'>
+    <div className='bg-zinc-800 rounded-xl md:rounded-2xl p-3 md:p-4 border border-green-500/30'>
       {/* Заголовок AI ответ */}
-      <div className='flex items-center justify-between gap-2 mb-3 pb-2 border-b border-green-500/20'>
-        <div className='flex items-center gap-2'>
-          <div className='flex items-center gap-1'>
-            <div className='w-1 h-3 bg-green-500 rounded'></div>
-            <div className='w-1 h-4 bg-green-500 rounded'></div>
-            <div className='w-1 h-3 bg-green-500 rounded'></div>
-            <div className='w-1 h-5 bg-green-500 rounded'></div>
+      <div className='flex items-center justify-between gap-1.5 md:gap-2 mb-2 md:mb-3 pb-2 border-b border-green-500/20'>
+        <div className='flex items-center gap-1.5 md:gap-2'>
+          <div className='flex items-center gap-0.5 md:gap-1'>
+            <div className='w-0.5 md:w-1 h-2 md:h-3 bg-green-500 rounded'></div>
+            <div className='w-0.5 md:w-1 h-3 md:h-4 bg-green-500 rounded'></div>
+            <div className='w-0.5 md:w-1 h-2 md:h-3 bg-green-500 rounded'></div>
+            <div className='w-0.5 md:w-1 h-3 md:h-5 bg-green-500 rounded'></div>
           </div>
-          <LuAudioWaveform size={18} className='text-green-500' />
-          <span className='text-xs text-green-500 font-bold'>AI ответ</span>
+          <LuAudioWaveform size={14} className='md:w-[18px] md:h-[18px] text-green-500' />
+          <span className='text-[10px] md:text-xs text-green-500 font-bold'>AI ответ</span>
         </div>
         
         {/* Кнопка настроек голоса */}
         <button
           onClick={() => setShowVoiceSelector(true)}
-          className='rounded-full bg-zinc-700 text-green-500 p-1.5 hover:bg-zinc-600 transition-colors'
+          className='rounded-full bg-zinc-700 text-green-500 p-1 md:p-1.5 hover:bg-zinc-600 transition-colors'
           title='Настройки голоса'
         >
-          <FaCog size={12} />
+          <FaCog size={10} className='md:w-3 md:h-3' />
         </button>
       </div>
 
       {/* Аудиоплеер */}
       {isGenerating ? (
-        <div className='flex items-center gap-2 text-green-500 py-4'>
-          <div className='w-2 h-2 bg-green-500 rounded-full animate-pulse'></div>
-          <span className='text-sm'>Генерация аудио...</span>
+        <div className='flex items-center gap-2 text-green-500 py-3 md:py-4'>
+          <div className='w-1.5 md:w-2 h-1.5 md:h-2 bg-green-500 rounded-full animate-pulse'></div>
+          <span className='text-xs md:text-sm'>Генерация аудио...</span>
         </div>
       ) : (
-        <div className='flex items-center gap-3'>
+        <div className='flex items-center gap-2 md:gap-3'>
           <button
             onClick={togglePlay}
             disabled={isGenerating}
-            className='rounded-full bg-green-500 text-white p-3 hover:bg-green-600 transition-colors disabled:opacity-50 flex-shrink-0'
+            className='rounded-full bg-green-500 text-white p-2 md:p-3 hover:bg-green-600 transition-colors disabled:opacity-50 flex-shrink-0'
           >
-            {isPlaying ? <FaPause size={16} /> : <FaPlay size={16} />}
+            {isPlaying ? <FaPause size={12} className='md:w-4 md:h-4' /> : <FaPlay size={12} className='md:w-4 md:h-4' />}
           </button>
           
-          <div className='flex-1'>
+          <div className='flex-1 min-w-0'>
             <input
               type='range'
               min={0}
@@ -319,7 +319,7 @@ const AudioMessage: React.FC<AudioMessageProps> = ({ text, messageId }) => {
                 background: `linear-gradient(to right, #22c55e 0%, #22c55e ${(currentTime / (duration || 1)) * 100}%, #3f3f46 ${(currentTime / (duration || 1)) * 100}%, #3f3f46 100%)`
               }}
             />
-            <div className='flex justify-between text-xs text-zinc-400 mt-1'>
+            <div className='flex justify-between text-[10px] md:text-xs text-zinc-400 mt-0.5 md:mt-1'>
               <span>{formatTime(currentTime)}</span>
               <span>{formatTime(duration)}</span>
             </div>
@@ -328,13 +328,13 @@ const AudioMessage: React.FC<AudioMessageProps> = ({ text, messageId }) => {
           <button
             onClick={handleDownload}
             disabled={isDownloading}
-            className='rounded-full bg-zinc-700 text-green-500 p-2 hover:bg-zinc-600 transition-colors flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed'
+            className='rounded-full bg-zinc-700 text-green-500 p-1.5 md:p-2 hover:bg-zinc-600 transition-colors flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed'
             title={isDownloading ? 'Генерация аудио...' : 'Скачать аудио'}
           >
             {isDownloading ? (
-              <FaSpinner size={14} className='animate-spin' />
+              <FaSpinner size={12} className='md:w-3.5 md:h-3.5 animate-spin' />
             ) : (
-              <FaDownload size={14} />
+              <FaDownload size={12} className='md:w-3.5 md:h-3.5' />
             )}
           </button>
         </div>
@@ -350,7 +350,7 @@ const AudioMessage: React.FC<AudioMessageProps> = ({ text, messageId }) => {
             }
           }}
         >
-          <div className='bg-zinc-800 border-2 border-green-500/30 rounded-2xl p-6 max-w-md w-full mx-4 relative'>
+          <div className='bg-zinc-800 border-2 border-green-500/30 rounded-xl md:rounded-2xl p-4 md:p-6 max-w-md w-full mx-2 md:mx-4 relative'>
             {/* Кнопка закрытия */}
             <button
               onClick={() => setShowVoiceSelector(false)}

@@ -86,9 +86,16 @@ export class Chat {
 			console.log('[Chat.sendToOpenAI] Ответ получен за', fetchDuration, 'мс, статус:', response.status);
 
 			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-				console.error('[Chat.sendToOpenAI] Ошибка ответа:', errorData);
-				const errorMessage = errorData.error || `Ошибка HTTP: ${response.status}`;
+				let errorMessage = `Ошибка HTTP: ${response.status}`;
+				
+				if (response.status === 413) {
+					errorMessage = 'Размер запроса слишком большой. Пожалуйста:\n- Уменьшите размер файлов (максимум 4MB на файл)\n- Или очистите историю чата';
+				} else {
+					const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+					console.error('[Chat.sendToOpenAI] Ошибка ответа:', errorData);
+					errorMessage = errorData.error || errorMessage;
+				}
+				
 				throw new Error(errorMessage);
 			}
 

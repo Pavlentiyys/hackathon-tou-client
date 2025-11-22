@@ -17,8 +17,26 @@ const SelectFile: React.FC<FileSelect>= ({
        const fileList = event.target.files;
 
        if (fileList && fileList.length > 0) {
+        const MAX_FILE_SIZE = 4.5 * 1024 * 1024; // 4.5MB
         const filesArray: File[] = Array.from(fileList);
-        onFilesSelected(filesArray);
+        const validFiles: File[] = [];
+        const invalidFiles: string[] = [];
+        
+        filesArray.forEach(file => {
+          if (file.size > MAX_FILE_SIZE) {
+            invalidFiles.push(`${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+          } else {
+            validFiles.push(file);
+          }
+        });
+        
+        if (invalidFiles.length > 0) {
+          alert(`Файл(ы) слишком большие (максимум 4.5MB):\n${invalidFiles.join('\n')}`);
+        }
+        
+        if (validFiles.length > 0) {
+          onFilesSelected(validFiles);
+        }
         event.target.value = '';
        } else {
         onFilesSelected([]);
